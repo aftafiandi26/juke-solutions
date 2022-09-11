@@ -78,6 +78,7 @@ class EmployesController extends Controller
             'email'         => $request->email,
             'position'      => $request->position,
             'province'      => $url,
+            'province_id'   => $request->provinsi,
             'city'          => $request->city,
             'ktp'           => $request->ktp,
             'photo_ktp'     => $path,
@@ -126,7 +127,67 @@ class EmployesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $emp = Employee::find($id);
+
+        $rule = [
+            'firstName'     => 'required|string|min:3',
+            'lastName'      => 'required|string',
+            'datepicker'    => 'required|date',
+            'email'         => 'required|email',
+            'provinsi'      => 'required',
+            'city'          => 'required',
+            'address'       => 'required',
+            'ktp'           => 'required|numeric|min:4',
+            'photo_ktp'     => 'file|mimes:jpg,png',
+            'bank_position' => 'required',
+            'account'       => 'required|numeric|min:4',
+            'phone'         => 'required|numeric|min:4',
+            'position'      => 'required'
+        ];
+
+        $validator = Validator::make($request->all(), $rule);
+
+        if ($validator->fails()) {
+            toast('Sorry, something wrong !!', 'error');
+            return redirect()->route('home')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $url = file_get_contents("https://dev.farizdotid.com/api/daerahindonesia/provinsi/" . $request->provinsi);
+        $url = json_decode($url, true);
+        $url = $url['nama'];
+
+        $path = $emp->photo_ktp;
+
+        if (!empty($request->photo_ktp)) {
+            Storage::delete($emp->photo_ktp);
+            $path = Storage::putFile('public/employes', $request->photo_ktp);
+        }
+
+        $data = [
+            'first_name'    => $request->firstName,
+            'last_name'     => $request->lastName,
+            'bod'           => $request->datepicker,
+            'email'         => $request->email,
+            'position'      => $request->position,
+            'province'      => $url,
+            'province_id'   => $request->provinsi,
+            'city'          => $request->city,
+            'ktp'           => $request->ktp,
+            'photo_ktp'     => $path,
+            'rek_bank_position' => $request->bank_position,
+            'rek_bank'      => $request->account,
+            'phone'         => $request->phone,
+            'address'       => $request->address,
+            'code_pos'      => $request->code_pos
+        ];
+
+        // dd($data);
+
+        Employee::where('id', $id)->update($data);
+        Alert::success('Data berhasil ditambahkan');
+        return redirect()->route('home');
     }
 
     /**
@@ -137,6 +198,6 @@ class EmployesController extends Controller
      */
     public function destroy($id)
     {
-        //
+        return "Ini halaman delete";
     }
 }

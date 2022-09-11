@@ -21,6 +21,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/home/{id}', [App\Http\Controllers\HomeController::class, 'view'])->name('home.view');
+Route::get('/home/view/{id}', [App\Http\Controllers\HomeController::class, 'view'])->name('home.view');
+Route::get('/home/edit/{id}', [App\Http\Controllers\HomeController::class, 'edit'])->name('home.edit');
 
-Route::resource('/employes', EmployesController::class);
+Route::resource('/employes', EmployesController::class)->except(['index', 'create', 'show', 'edit']);

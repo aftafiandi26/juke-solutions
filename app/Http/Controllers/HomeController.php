@@ -27,13 +27,20 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $provinces = $this->provinces();
+
+        $employes = Employee::latest()->paginate(10)->withQueryString();
+
+        return view('home', compact(['provinces', 'employes']));
+    }
+
+    protected function provinces()
+    {
         $provinces = file_get_contents('http://dev.farizdotid.com/api/daerahindonesia/provinsi');
         $provinces = json_decode($provinces, true);
         $provinces = $provinces['provinsi'];
 
-        $employes = Employee::latest()->get();
-
-        return view('home', compact(['provinces', 'employes']));
+        return $provinces;
     }
 
     public function view($id)
@@ -42,9 +49,30 @@ class HomeController extends Controller
 
         $cover = asset(Storage::url($emp->photo_ktp));
 
-        $return = '<div class="modal-body">
-        <img src="' . $cover . '" alt="ktp" class="img img-fluid">
+        $return = '<div class="modal-header">        
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <img src="' . $cover . '" alt="ktp" class="img img-fluid">
                     </div>';
+
+        return $return;
+    }
+
+    public function edit($id)
+    {
+        $emp = Employee::find($id);
+
+        $cover = asset(Storage::url($emp->photo_ktp));
+        $provinces = $this->provinces();
+
+        $url = route('employes.update', $id);
+
+        $return = [
+            'provinces' => $provinces,
+            'data'      => $emp,
+            'url'       => $url
+        ];
 
         return $return;
     }
