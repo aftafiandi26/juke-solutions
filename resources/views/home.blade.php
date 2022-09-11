@@ -28,6 +28,33 @@
                     </div>
                     <div class="row">
                         <div class="col">
+                            <form action="{{ route('home') }}" method="get">
+                                @csrf
+                                <div class="row">
+                                    <div class="col-1">
+                                        <label for="filter">Filter</label>
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" class="form-control" id="filter" placeholder="name" name="filterName">
+                                    </div>
+                                    <div class="col">
+                                        <select name="filterPosition" id="filter" class="form-control">
+                                            <option value="">-select-</option>
+                                            <option value="manager">Manager</option>
+                                            <option value="supervisor">Supervisor</option>
+                                            <option value="staff">Staff</option>
+                                            <option value="etc">Etc</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <button type="submit" class="btn btn-sm btn-primary"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                        <a href="{{ route('home') }}" type="submit" class="btn btn-sm btn-secondary"><i class="fa-solid fa-power-off"></i></a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col">
+
                             <button type="button" class="btn btn-sm btn-primary float-end mb-2" data-bs-toggle="modal" data-bs-target="#addEmployes">
                                 <i class="fa-solid fa-plus"></i> Add
                             </button>
@@ -50,10 +77,10 @@
                             <tbody>
                                 @foreach ($employes as $key => $employe)
                                 <tr>
-                                    <td>{{ $key }}</td>
+                                    <td>{{ $employes->firstItem() + $key }}</td>
                                     <td>{{ $employe->first_name }} {{ $employe->last_name }}</td>
                                     <td>{{ $employe->phone }}</td>
-                                    <td>{{ $employe->bod }}</td>
+                                    <td>{{ date('d-m-Y', strtotime($employe->bod)) }}</td>
                                     <td>{{ $employe->address }}</td>
                                     <td>{{ $employe->position }}</td>
                                     <td>
@@ -76,6 +103,7 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        {{ $employes->render() }}
                     </div>
                 </div>
             </div>
@@ -125,6 +153,7 @@
                             <select name="position" id="position" class="form-control">
                                 <option value="">-select position-</option>
                                 <option value="manager">Manager</option>
+                                <option value="supervisor">Supervisor</option>
                                 <option value="staff">Staff</option>
                                 <option value="etc">Etc</option>
                             </select>
@@ -341,11 +370,15 @@
                 });
 
                 let positionManager;
+                let positionSupervisor;
                 let positionStaff;
                 let positionEtc;
 
                 if (a.data.position === "manager") {
                     positionManager = "selected";
+                }
+                if (a.data.position === "supervisor") {
+                    positionSupervisor = "selected";
                 }
                 if (a.data.position === "staff") {
                     positionStaff = "selected";
@@ -413,15 +446,16 @@
                         <select name="position" id="position" class="form-control">
                             <option value="">-select position-</option>
                             <option value="manager" ` + positionManager + `>Manager</option>
+                            <option value="supervisor" ` + positionSupervisor + `>Supervisor</option>
                             <option value="staff" ` + positionStaff + `>Staff</option>
                             <option value="etc" ` + positionEtc + `>Etc</option>
                         </select>
                     </div>
                 </div>
                 <div class="mb-3 row">
-                    <label for="datepicker" class="col-sm-2 col-form-label">Date of Birth</label>
+                    <label for="datepickerEdit" class="col-sm-2 col-form-label">Date of Birth</label>
                     <div class="col-sm-10">
-                        <input type="date" class="form-control" id="datepicker" name="datepicker" value="` + a.data.bod + `">
+                        <input type="text" class="form-control" id="datepickerEdit" name="datepicker" value="` + a.data.bod + `">
                     </div>
                 </div>
                 <div class="mb-3 row">

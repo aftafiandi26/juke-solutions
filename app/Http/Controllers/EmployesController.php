@@ -186,7 +186,7 @@ class EmployesController extends Controller
         // dd($data);
 
         Employee::where('id', $id)->update($data);
-        Alert::success('Data berhasil ditambahkan');
+        Alert::success('Data berhasil diupdate');
         return redirect()->route('home');
     }
 
@@ -198,6 +198,11 @@ class EmployesController extends Controller
      */
     public function destroy($id)
     {
-        return "Ini halaman delete";
+        $emp = Employee::find($id);
+
+        Storage::delete($emp->photo_ktp);
+        $emp->delete();
+        Alert::info("Data berhasil dihapus");
+        return redirect()->route('home');
     }
 }

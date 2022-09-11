@@ -29,7 +29,10 @@ class HomeController extends Controller
     {
         $provinces = $this->provinces();
 
-        $employes = Employee::latest()->paginate(10)->withQueryString();
+        $employes = Employee::where('position', 'like', '%' . request()->filterPosition . '%')->where(function ($query) {
+            $query->where('first_name', 'like', '%' . request()->filterName . '%')
+                ->orWhere('last_name', 'like', '%' . request()->filterName . '%');
+        })->orderBy('first_name', 'asc')->paginate(10)->withQueryString();
 
         return view('home', compact(['provinces', 'employes']));
     }
